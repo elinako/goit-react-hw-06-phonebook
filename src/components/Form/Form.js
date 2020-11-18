@@ -6,6 +6,9 @@ import { CSSTransition } from "react-transition-group";
 import FormTitleAnimation from "./FormTitleAnimation.module.css";
 import { connect } from "react-redux";
 import actionContacts from "../../redux/contacts/actionsContacts";
+import Alert from "../Alert/Alert";
+import AlertAnimation from "../../components/Alert/AlertAnimation.module.css";
+import store from "../../redux/store";
 uuidv4();
 
 const HeaderText = styled.h2`
@@ -55,6 +58,7 @@ class Form extends Component {
   state = {
     name: "",
     number: "",
+    showAlert: false,
   };
 
   onChangeValue = ({ target }) => {
@@ -63,14 +67,33 @@ class Form extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    this.props.onAddContact({ ...this.state });
     this.setState({ name: "", number: "" });
+    const contactsStore = store.getState().contacts.items;
+    if (
+      contactsStore.some(
+        (item) => item.name.toLowerCase() === this.state.name.toLowerCase()
+      )
+    ) {
+      this.setState((state) => ({ showAlert: !state.showAlert }));
+    } else {
+      this.props.onAddContact({ ...this.state });
+    }
   };
 
   render() {
-    const { name, number } = this.state;
+    const { name, number, showAlert } = this.state;
     return (
       <>
+        <CSSTransition
+          in={showAlert}
+          onEntered={() => this.setState({ showAlert: false })}
+          timeout={500}
+          classNames={AlertAnimation}
+          unmountOnExit
+        >
+          <Alert />
+        </CSSTransition>
+
         <CSSTransition
           in={true}
           appear

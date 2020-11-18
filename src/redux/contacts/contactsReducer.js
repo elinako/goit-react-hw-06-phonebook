@@ -8,7 +8,6 @@ const onDeleteContact = (state, action) =>
   state.filter((contact) => contact.id !== action.payload);
 
 const onShowAlert = (state, action) => {
-  console.log("action", action.payload);
   if (
     state.contacts.some(
       (item) => item.name.toLowerCase() === action.payload.name.toLowerCase()
